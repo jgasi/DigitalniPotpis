@@ -149,5 +149,42 @@ namespace DigitalniPotpis_Projekt
                 MessageBox.Show("Greška pri dekriptiranju datoteke: " + ex.Message);
             }
         }
+
+        private void btnIzracunajSazetak_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtOdabranaDatoteka.Text))
+            {
+                MessageBox.Show("Molimo odaberite datoteku.", "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                // Učitavanje datoteke
+                byte[] fileBytes = File.ReadAllBytes(txtOdabranaDatoteka.Text);
+
+                // Kreiranje SHA256 hash algoritma
+                using (SHA256 sha256 = SHA256.Create())
+                {
+                    // Izračunavanje hash vrijednosti
+                    byte[] hashBytes = sha256.ComputeHash(fileBytes);
+
+                    // Konvertiranje hash-a u hexadecimalni string
+                    string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+                    // Prikaz sažetka u textbox-u
+                    txtRezultat.Text = hashString;
+
+                    // Pohrana sažetka u datoteku
+                    File.WriteAllText("sazetak.txt", hashString);
+
+                    MessageBox.Show("Sažetak je uspješno izračunat i pohranjen!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Došlo je do greške: {ex.Message}", "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

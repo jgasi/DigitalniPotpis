@@ -79,6 +79,7 @@
             this.btnIzracunajSazetak.TabIndex = 3;
             this.btnIzracunajSazetak.Text = "Izračunaj sažetak";
             this.btnIzracunajSazetak.UseVisualStyleBackColor = true;
+            this.btnIzracunajSazetak.Click += new System.EventHandler(this.btnIzracunajSazetak_Click);
             // 
             // btnPotpisiDatoteku
             // 
