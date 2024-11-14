@@ -89,6 +89,7 @@
             this.btnPotpisiDatoteku.TabIndex = 4;
             this.btnPotpisiDatoteku.Text = "Potpiši datoteku";
             this.btnPotpisiDatoteku.UseVisualStyleBackColor = true;
+            this.btnPotpisiDatoteku.Click += new System.EventHandler(this.btnPotpisiDatoteku_Click);
             // 
             // btnProvjeriPotpis
             // 
@@ -98,6 +99,7 @@
             this.btnProvjeriPotpis.TabIndex = 5;
             this.btnProvjeriPotpis.Text = "Provjeri potpis";
             this.btnProvjeriPotpis.UseVisualStyleBackColor = true;
+            this.btnProvjeriPotpis.Click += new System.EventHandler(this.btnProvjeriPotpis_Click);
             // 
             // txtOdabranaDatoteka
             // 

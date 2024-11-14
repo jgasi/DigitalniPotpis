@@ -186,5 +186,97 @@ namespace DigitalniPotpis_Projekt
                 MessageBox.Show($"Došlo je do greške: {ex.Message}", "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnPotpisiDatoteku_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtOdabranaDatoteka.Text))
+            {
+                MessageBox.Show("Odaberite datoteku koju želite potpisati.");
+                return;
+            }
+
+            try
+            {
+                // Učitaj privatni ključ
+                string privateKeyString = File.ReadAllText("privatni_kljuc.txt");
+                byte[] privateKey = Convert.FromBase64String(privateKeyString);
+
+                using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
+                {
+                    rsaAlg.ImportCspBlob(privateKey);
+
+                    // Učitaj datoteku koju želimo potpisati
+                    byte[] fileBytes = File.ReadAllBytes(txtOdabranaDatoteka.Text);
+
+                    // Izračunaj sažetak datoteke
+                    using (SHA256 sha256 = SHA256.Create())
+                    {
+                        byte[] hash = sha256.ComputeHash(fileBytes);
+
+                        // Potpiši sažetak privatnim ključem
+                        byte[] digitalSignature = rsaAlg.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
+
+                        // Spremi digitalni potpis u datoteku
+                        File.WriteAllText("digitalni_potpis.txt", Convert.ToBase64String(digitalSignature));
+
+                        MessageBox.Show("Datoteka je uspješno potpisana!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Pogreška prilikom potpisivanja: " + ex.Message);
+            }
+        }
+
+        private void btnProvjeriPotpis_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtOdabranaDatoteka.Text))
+            {
+                MessageBox.Show("Odaberite datoteku koju želite provjeriti.");
+                return;
+            }
+
+            try
+            {
+                // Učitaj javni ključ
+                string publicKeyString = File.ReadAllText("javni_kljuc.txt");
+                byte[] publicKey = Convert.FromBase64String(publicKeyString);
+
+                using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
+                {
+                    rsaAlg.ImportCspBlob(publicKey);
+
+                    // Učitaj datoteku koju želimo provjeriti
+                    byte[] fileBytes = File.ReadAllBytes(txtOdabranaDatoteka.Text);
+
+                    // Izračunaj sažetak datoteke
+                    using (SHA256 sha256 = SHA256.Create())
+                    {
+                        byte[] hash = sha256.ComputeHash(fileBytes);
+
+                        // Učitaj digitalni potpis
+                        string digitalSignatureString = File.ReadAllText("digitalni_potpis.txt");
+                        byte[] digitalSignature = Convert.FromBase64String(digitalSignatureString);
+
+                        // Provjeri potpis
+                        bool isValid = rsaAlg.VerifyHash(hash, CryptoConfig.MapNameToOID("SHA256"), digitalSignature);
+
+                        if (isValid)
+                        {
+                            MessageBox.Show("Digitalni potpis je valjan!");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Digitalni potpis nije valjan.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Pogreška prilikom provjere potpisa: " + ex.Message);
+            }
+        }
     }
 }
