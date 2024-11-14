@@ -66,17 +66,15 @@ namespace DigitalniPotpis_Projekt
 
         private void btnKriptirajDatoteku_Click(object sender, EventArgs e)
         {
-            // Provjera je li globalna varijabla 'odabranaDatoteka' postavljena
             if (string.IsNullOrEmpty(odabranaDatoteka) || !File.Exists(odabranaDatoteka))
             {
-                // Ako nije, pitaj korisnika da odabere datoteku
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    openFileDialog.Filter = "All files (*.*)|*.*"; // Filter za datoteke
+                    openFileDialog.Filter = "All files (*.*)|*.*";
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        odabranaDatoteka = openFileDialog.FileName; // Spremi putanju odabrane datoteke
+                        odabranaDatoteka = openFileDialog.FileName;
                     }
                     else
                     {
@@ -92,12 +90,10 @@ namespace DigitalniPotpis_Projekt
 
         private void btnDekriptirajDatoteku_Click(object sender, EventArgs e)
         {
-            // Provjeravamo postoji li kriptirana datoteka
-            string encryptedFilePath = "kriptirana_datoteka.bin"; // Promijeni prema tvojoj datoteci
+            string encryptedFilePath = "kriptirana_datoteka.bin";
 
             if (File.Exists(encryptedFilePath))
             {
-                // Pozivamo funkciju za dekriptiranje s unaprijed definiranom kriptiranom datotekom
                 DekriptirajDatoteku(encryptedFilePath);
             }
             else
@@ -113,9 +109,9 @@ namespace DigitalniPotpis_Projekt
             {
                 using (Aes aesAlg = Aes.Create())
                 {
-                    aesAlg.KeySize = 256;  // 256-bitni ključ
-                    aesAlg.GenerateKey();  // Generira ključ
-                    aesAlg.GenerateIV();   // Generira IV
+                    aesAlg.KeySize = 256;
+                    aesAlg.GenerateKey();
+                    aesAlg.GenerateIV();
 
                     using (FileStream fsOutput = new FileStream("kriptirana_datoteka.bin", FileMode.Create))
                     using (CryptoStream cs = new CryptoStream(fsOutput, aesAlg.CreateEncryptor(), CryptoStreamMode.Write))
@@ -124,11 +120,9 @@ namespace DigitalniPotpis_Projekt
                         fsInput.CopyTo(cs); // Kopira podatke iz izvornog u kriptirani stream
                     }
 
-                    // Spremanje ključa i IV u datoteku kako bi se mogli koristiti za dekriptiranje
                     File.WriteAllText("aes_kljuc.txt", Convert.ToBase64String(aesAlg.Key));
                     File.WriteAllText("aes_iv.txt", Convert.ToBase64String(aesAlg.IV));
 
-                    // Dodavanje sadržaja kriptirane datoteke u txtKriptirano (Base64 kodirano)
                     byte[] encryptedData = File.ReadAllBytes("kriptirana_datoteka.bin");
                     string base64EncryptedData = Convert.ToBase64String(encryptedData);
                     txtKriptirano.Text = base64EncryptedData;
@@ -146,7 +140,6 @@ namespace DigitalniPotpis_Projekt
         {
             try
             {
-                // Učitaj ključ i IV iz datoteka
                 byte[] key = Convert.FromBase64String(File.ReadAllText("aes_kljuc.txt"));
                 byte[] iv = Convert.FromBase64String(File.ReadAllText("aes_iv.txt"));
 
@@ -163,7 +156,6 @@ namespace DigitalniPotpis_Projekt
                         cs.CopyTo(fsOutput); // Kopira podatke iz kriptiranog streama u izvorni format
                     }
 
-                    // Dodavanje sadržaja dekriptirane datoteke u txtRezultat
                     string decryptedText = File.ReadAllText("dekriptirana_datoteka.txt");
                     txtRezultat.Text = decryptedText;
 
@@ -187,22 +179,17 @@ namespace DigitalniPotpis_Projekt
 
             try
             {
-                // Učitavanje datoteke
                 byte[] fileBytes = File.ReadAllBytes(odabranaDatoteka);
 
-                // Kreiranje SHA256 hash algoritma
                 using (SHA256 sha256 = SHA256.Create())
                 {
-                    // Izračunavanje hash vrijednosti
                     byte[] hashBytes = sha256.ComputeHash(fileBytes);
 
                     // Konvertiranje hash-a u hexadecimalni string
                     string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
 
-                    // Prikaz sažetka u textbox-u
                     txtRezultat.Text = hashString;
 
-                    // Pohrana sažetka u datoteku
                     File.WriteAllText("sazetak.txt", hashString);
 
                     MessageBox.Show("Sažetak je uspješno izračunat i pohranjen!");
@@ -224,18 +211,14 @@ namespace DigitalniPotpis_Projekt
 
             try
             {
-                // Učitaj privatni ključ iz XML datoteke
                 string privateKeyXml = File.ReadAllText("privatni_kljuc.xml");
 
                 using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
                 {
-                    // Učitaj privatni ključ iz XML stringa
                     rsaAlg.FromXmlString(privateKeyXml);
 
-                    // Učitaj datoteku koju želimo potpisati
                     byte[] fileBytes = File.ReadAllBytes(odabranaDatoteka);
 
-                    // Izračunaj sažetak datoteke
                     using (SHA256 sha256 = SHA256.Create())
                     {
                         byte[] hash = sha256.ComputeHash(fileBytes);
@@ -243,7 +226,6 @@ namespace DigitalniPotpis_Projekt
                         // Potpiši sažetak privatnim ključem
                         byte[] digitalSignature = rsaAlg.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
 
-                        // Spremi digitalni potpis u datoteku
                         File.WriteAllBytes("digitalni_potpis.bin", digitalSignature);
 
                         MessageBox.Show("Datoteka je uspješno potpisana!");
@@ -266,23 +248,18 @@ namespace DigitalniPotpis_Projekt
 
             try
             {
-                // Učitaj javni ključ iz XML datoteke
                 string publicKeyXml = File.ReadAllText("javni_kljuc.xml");
 
                 using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
                 {
-                    // Učitaj javni ključ iz XML stringa
                     rsaAlg.FromXmlString(publicKeyXml);
 
-                    // Učitaj datoteku koju želimo provjeriti
                     byte[] fileBytes = File.ReadAllBytes(odabranaDatoteka);
 
-                    // Izračunaj sažetak datoteke
                     using (SHA256 sha256 = SHA256.Create())
                     {
                         byte[] hash = sha256.ComputeHash(fileBytes);
 
-                        // Učitaj digitalni potpis iz datoteke
                         byte[] digitalSignature = File.ReadAllBytes("digitalni_potpis.bin");
 
                         // Provjeri potpis
@@ -307,17 +284,15 @@ namespace DigitalniPotpis_Projekt
 
         private void btnKriptirajAsimetricno_Click(object sender, EventArgs e)
         {
-            // Provjeri je li globalna varijabla 'odabranaDatoteka' postavljena
             if (string.IsNullOrEmpty(odabranaDatoteka) || !File.Exists(odabranaDatoteka))
             {
-                // Ako nije, pitaj korisnika da odabere datoteku
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    openFileDialog.Filter = "All files (*.*)|*.*"; // Filter za datoteke
+                    openFileDialog.Filter = "All files (*.*)|*.*";
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        odabranaDatoteka = openFileDialog.FileName; // Spremi putanju odabrane datoteke
+                        odabranaDatoteka = openFileDialog.FileName;
                         MessageBox.Show("Datoteka je uspješno odabrana!");
                     }
                     else
@@ -328,7 +303,6 @@ namespace DigitalniPotpis_Projekt
                 }
             }
 
-            // Nastavi s kriptiranjem datoteke
             KriptirajAsimetricnoDatoteku(odabranaDatoteka);
         }
 
@@ -336,25 +310,19 @@ namespace DigitalniPotpis_Projekt
         {
             try
             {
-                // Učitaj javni ključ iz XML datoteke
                 string publicKeyXml = File.ReadAllText("javni_kljuc.xml");
 
                 using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
                 {
-                    // Importiraj javni ključ
                     rsaAlg.FromXmlString(publicKeyXml);
 
-                    // Učitaj datoteku koju želimo kriptirati
                     byte[] fileBytes = File.ReadAllBytes(filePath);
 
-                    // Kriptiraj datoteku pomoću javnog ključa
                     byte[] encryptedBytes = rsaAlg.Encrypt(fileBytes, false); // false znači bez OaepSHA256, standardni padding
 
-                    // Spremi kriptirani sadržaj u datoteku s hardkodiranim imenom
-                    string encryptedFilePath = "asimetricno_kriptirana_datoteka.bin"; // Hardkodirano ime datoteke
+                    string encryptedFilePath = "asimetricno_kriptirana_datoteka.bin";
                     File.WriteAllBytes(encryptedFilePath, encryptedBytes);
 
-                    // Dodaj sadržaj kriptirane datoteke u txtKriptirano (Base64 kodirano)
                     string base64EncryptedData = Convert.ToBase64String(encryptedBytes);
                     txtKriptirano.Text = base64EncryptedData;
 
@@ -368,16 +336,12 @@ namespace DigitalniPotpis_Projekt
         }
 
 
-
         private void btnDekriptirajAsimetricno_Click(object sender, EventArgs e)
         {
-            // Hardkodirani naziv kriptirane datoteke
-            string encryptedFilePath = "asimetricno_kriptirana_datoteka.bin"; // Hardkodirani naziv datoteke
+            string encryptedFilePath = "asimetricno_kriptirana_datoteka.bin";
 
-            // Provjera postoji li kriptirana datoteka
             if (File.Exists(encryptedFilePath))
             {
-                // Pozivamo funkciju za dekriptiranje s fiksnim imenom kriptirane datoteke
                 DekriptirajAsimetricno(encryptedFilePath);
             }
             else
@@ -390,25 +354,19 @@ namespace DigitalniPotpis_Projekt
         {
             try
             {
-                // Učitaj privatni ključ iz XML datoteke
                 string privateKeyXml = File.ReadAllText("privatni_kljuc.xml");
 
                 using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
                 {
-                    // Importiraj privatni ključ
                     rsaAlg.FromXmlString(privateKeyXml);
 
-                    // Učitaj kriptirani sadržaj
                     byte[] encryptedBytes = File.ReadAllBytes(filePath);
 
-                    // Dekriptiraj datoteku pomoću privatnog ključa
                     byte[] decryptedBytes = rsaAlg.Decrypt(encryptedBytes, false); // false znači bez OaepSHA256, standardni padding
 
-                    // Spremi dekriptirani sadržaj u novu datoteku
                     string decryptedFilePath = Path.ChangeExtension(filePath, ".dekriptirani.dat");
                     File.WriteAllBytes(decryptedFilePath, decryptedBytes);
 
-                    // Dodaj sadržaj dekriptirane datoteke u txtRezultat (TextBox)
                     string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
                     txtRezultat.Text = decryptedText;
 
