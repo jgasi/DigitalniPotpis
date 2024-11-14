@@ -59,6 +59,7 @@
             this.btnKriptirajDatoteku.TabIndex = 1;
             this.btnKriptirajDatoteku.Text = "Kriptiraj datoteku";
             this.btnKriptirajDatoteku.UseVisualStyleBackColor = true;
+            this.btnKriptirajDatoteku.Click += new System.EventHandler(this.btnKriptirajDatoteku_Click);
             // 
             // btnDekriptirajDatoteku
             // 
@@ -68,6 +69,7 @@
             this.btnDekriptirajDatoteku.TabIndex = 2;
             this.btnDekriptirajDatoteku.Text = "Dekriptiraj datoteku";
             this.btnDekriptirajDatoteku.UseVisualStyleBackColor = true;
+            this.btnDekriptirajDatoteku.Click += new System.EventHandler(this.btnDekriptirajDatoteku_Click);
             // 
             // btnIzracunajSazetak
             // 
