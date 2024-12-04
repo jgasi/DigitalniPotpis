@@ -259,6 +259,12 @@ namespace DigitalniPotpis_Projekt
                 return;
             }
 
+            if (!File.Exists("sazetak.txt"))
+            {
+                MessageBox.Show("Sažetak datoteke nije pronađen. Molimo prvo izračunajte sažetak.", "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
                 string publicKeyXml = File.ReadAllText("javni_kljuc.xml");
@@ -267,24 +273,22 @@ namespace DigitalniPotpis_Projekt
                 {
                     rsaAlg.FromXmlString(publicKeyXml);
 
-                    byte[] fileBytes = File.ReadAllBytes(odabranaDatoteka);
+                    string hashString = File.ReadAllText("sazetak.txt");
+                    byte[] hash = Enumerable.Range(0, hashString.Length / 2)
+                                             .Select(x => Convert.ToByte(hashString.Substring(x * 2, 2), 16))
+                                             .ToArray();
 
-                    using (SHA256 sha256 = SHA256.Create())
+                    byte[] digitalSignature = File.ReadAllBytes("digitalni_potpis.bin");
+
+                    bool isValid = rsaAlg.VerifyHash(hash, CryptoConfig.MapNameToOID("SHA256"), digitalSignature);
+
+                    if (isValid)
                     {
-                        byte[] hash = sha256.ComputeHash(fileBytes);
-
-                        byte[] digitalSignature = File.ReadAllBytes("digitalni_potpis.bin");
-
-                        bool isValid = rsaAlg.VerifyHash(hash, CryptoConfig.MapNameToOID("SHA256"), digitalSignature);
-
-                        if (isValid)
-                        {
-                            MessageBox.Show("Digitalni potpis je valjan!");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Digitalni potpis nije valjan.");
-                        }
+                        MessageBox.Show("Digitalni potpis je valjan!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Digitalni potpis nije valjan.");
                     }
                 }
             }
@@ -293,6 +297,7 @@ namespace DigitalniPotpis_Projekt
                 MessageBox.Show("Pogreška prilikom provjere potpisa: " + ex.Message);
             }
         }
+
 
         private void btnKriptirajAsimetricno_Click(object sender, EventArgs e)
         {
