@@ -34,7 +34,7 @@ namespace DigitalniPotpis_Projekt
 
         private void btnGenerirajKljuceve_Click(object sender, EventArgs e)
         {
-            if (File.Exists("tajni_kljuc.txt") || File.Exists("privatni_kljuc.txt") || File.Exists("javni_kljuc.txt"))
+            if (File.Exists("tajni_kljuc.txt") || File.Exists("privatni_kljuc.xml") || File.Exists("javni_kljuc.xml"))
             {
                 var result = MessageBox.Show("Ključevi već postoje. Želite li ih zamijeniti novima?", "Upozorenje", MessageBoxButtons.YesNo);
 
@@ -55,6 +55,14 @@ namespace DigitalniPotpis_Projekt
                     File.WriteAllText("javni_kljuc.xml", publicKeyXml);
                 }
 
+                using (Aes aesAlg = Aes.Create())
+                {
+                    aesAlg.KeySize = 256;
+                    aesAlg.GenerateKey();
+
+                    File.WriteAllText("tajni_kljuc.txt", Convert.ToBase64String(aesAlg.Key));
+                }
+
                 MessageBox.Show("Ključevi su uspješno generirani i pohranjeni!");
             }
             catch (Exception ex)
@@ -62,6 +70,7 @@ namespace DigitalniPotpis_Projekt
                 MessageBox.Show($"Došlo je do greške prilikom generiranja ključeva: {ex.Message}");
             }
         }
+
 
         private void btnKriptirajDatoteku_Click(object sender, EventArgs e)
         {
@@ -74,6 +83,7 @@ namespace DigitalniPotpis_Projekt
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         odabranaDatoteka = openFileDialog.FileName;
+                        txtOdabranaDatoteka.Text = openFileDialog.FileName;
                     }
                     else
                     {
@@ -109,7 +119,8 @@ namespace DigitalniPotpis_Projekt
                 using (Aes aesAlg = Aes.Create())
                 {
                     aesAlg.KeySize = 256;
-                    aesAlg.GenerateKey();
+
+                    aesAlg.Key = Convert.FromBase64String(File.ReadAllText("tajni_kljuc.txt"));
                     aesAlg.GenerateIV();
 
                     using (FileStream fsOutput = new FileStream("kriptirana_datoteka.bin", FileMode.Create))
@@ -119,7 +130,6 @@ namespace DigitalniPotpis_Projekt
                         fsInput.CopyTo(cs);
                     }
 
-                    File.WriteAllText("aes_kljuc.txt", Convert.ToBase64String(aesAlg.Key));
                     File.WriteAllText("aes_iv.txt", Convert.ToBase64String(aesAlg.IV));
 
                     byte[] encryptedData = File.ReadAllBytes("kriptirana_datoteka.bin");
@@ -135,11 +145,12 @@ namespace DigitalniPotpis_Projekt
             }
         }
 
+
         private void DekriptirajDatoteku(string filePath)
         {
             try
             {
-                byte[] key = Convert.FromBase64String(File.ReadAllText("aes_kljuc.txt"));
+                byte[] key = Convert.FromBase64String(File.ReadAllText("tajni_kljuc.txt"));
                 byte[] iv = Convert.FromBase64String(File.ReadAllText("aes_iv.txt"));
 
                 using (Aes aesAlg = Aes.Create())
@@ -288,7 +299,7 @@ namespace DigitalniPotpis_Projekt
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         odabranaDatoteka = openFileDialog.FileName;
-                        MessageBox.Show("Datoteka je uspješno odabrana!");
+                        txtOdabranaDatoteka.Text = openFileDialog.FileName;
                     }
                     else
                     {
