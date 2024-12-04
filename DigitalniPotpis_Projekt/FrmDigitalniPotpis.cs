@@ -228,7 +228,7 @@ namespace DigitalniPotpis_Projekt
 
                 string privateKeyXml = File.ReadAllText("privatni_kljuc.xml");
                 string hashString = File.ReadAllText("sazetak.txt");
-                //ne radi mi FromHexString()
+
                 byte[] hash = Enumerable.Range(0, hashString.Length / 2)
                         .Select(x => Convert.ToByte(hashString.Substring(x * 2, 2), 16))
                         .ToArray();
@@ -274,6 +274,7 @@ namespace DigitalniPotpis_Projekt
                     rsaAlg.FromXmlString(publicKeyXml);
 
                     string hashString = File.ReadAllText("sazetak.txt");
+
                     byte[] hash = Enumerable.Range(0, hashString.Length / 2)
                                              .Select(x => Convert.ToByte(hashString.Substring(x * 2, 2), 16))
                                              .ToArray();
