@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -219,24 +220,28 @@ namespace DigitalniPotpis_Projekt
 
             try
             {
+                if (!File.Exists("sazetak.txt"))
+                {
+                    MessageBox.Show("Sažetak nije generiran. Molimo generirajte sažetak prije potpisivanja.", "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 string privateKeyXml = File.ReadAllText("privatni_kljuc.xml");
+                string hashString = File.ReadAllText("sazetak.txt");
+                //ne radi mi FromHexString()
+                byte[] hash = Enumerable.Range(0, hashString.Length / 2)
+                        .Select(x => Convert.ToByte(hashString.Substring(x * 2, 2), 16))
+                        .ToArray();
 
                 using (RSACryptoServiceProvider rsaAlg = new RSACryptoServiceProvider())
                 {
                     rsaAlg.FromXmlString(privateKeyXml);
 
-                    byte[] fileBytes = File.ReadAllBytes(odabranaDatoteka);
+                    byte[] digitalSignature = rsaAlg.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
 
-                    using (SHA256 sha256 = SHA256.Create())
-                    {
-                        byte[] hash = sha256.ComputeHash(fileBytes);
+                    File.WriteAllBytes("digitalni_potpis.bin", digitalSignature);
 
-                        byte[] digitalSignature = rsaAlg.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
-
-                        File.WriteAllBytes("digitalni_potpis.bin", digitalSignature);
-
-                        MessageBox.Show("Datoteka je uspješno potpisana!");
-                    }
+                    MessageBox.Show("Datoteka je uspješno potpisana!");
                 }
             }
             catch (Exception ex)
@@ -244,6 +249,7 @@ namespace DigitalniPotpis_Projekt
                 MessageBox.Show("Pogreška prilikom potpisivanja: " + ex.Message);
             }
         }
+
 
         private void btnProvjeriPotpis_Click(object sender, EventArgs e)
         {
