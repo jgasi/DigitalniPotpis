@@ -39,8 +39,12 @@
             this.btnKriptirajAsimetricno = new System.Windows.Forms.Button();
             this.btnDekriptirajAsimetricno = new System.Windows.Forms.Button();
             this.txtKriptirano = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblKriptiranaDatoteka = new System.Windows.Forms.Label();
             this.btnOdaberiDatoteku = new System.Windows.Forms.Button();
+            this.lblOdabranaDatoteka = new System.Windows.Forms.Label();
+            this.txtOdabranaDatoteka = new System.Windows.Forms.TextBox();
+            this.lblIzracunatiSazetak = new System.Windows.Forms.Label();
+            this.txtIzracunatiSazetak = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnGenerirajKljuceve
@@ -105,7 +109,7 @@
             // 
             // txtRezultat
             // 
-            this.txtRezultat.Location = new System.Drawing.Point(80, 205);
+            this.txtRezultat.Location = new System.Drawing.Point(79, 254);
             this.txtRezultat.Name = "txtRezultat";
             this.txtRezultat.ReadOnly = true;
             this.txtRezultat.Size = new System.Drawing.Size(634, 20);
@@ -114,7 +118,7 @@
             // lblPrikazRezultata
             // 
             this.lblPrikazRezultata.AutoSize = true;
-            this.lblPrikazRezultata.Location = new System.Drawing.Point(86, 189);
+            this.lblPrikazRezultata.Location = new System.Drawing.Point(76, 238);
             this.lblPrikazRezultata.Name = "lblPrikazRezultata";
             this.lblPrikazRezultata.Size = new System.Drawing.Size(112, 13);
             this.lblPrikazRezultata.TabIndex = 9;
@@ -142,20 +146,20 @@
             // 
             // txtKriptirano
             // 
-            this.txtKriptirano.Location = new System.Drawing.Point(80, 144);
+            this.txtKriptirano.Location = new System.Drawing.Point(79, 215);
             this.txtKriptirano.Name = "txtKriptirano";
             this.txtKriptirano.ReadOnly = true;
             this.txtKriptirano.Size = new System.Drawing.Size(634, 20);
             this.txtKriptirano.TabIndex = 13;
             // 
-            // label1
+            // lblKriptiranaDatoteka
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(86, 128);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(99, 13);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "Kriptirana datoteka:";
+            this.lblKriptiranaDatoteka.AutoSize = true;
+            this.lblKriptiranaDatoteka.Location = new System.Drawing.Point(76, 199);
+            this.lblKriptiranaDatoteka.Name = "lblKriptiranaDatoteka";
+            this.lblKriptiranaDatoteka.Size = new System.Drawing.Size(99, 13);
+            this.lblKriptiranaDatoteka.TabIndex = 14;
+            this.lblKriptiranaDatoteka.Text = "Kriptirana datoteka:";
             // 
             // btnOdaberiDatoteku
             // 
@@ -167,13 +171,51 @@
             this.btnOdaberiDatoteku.UseVisualStyleBackColor = true;
             this.btnOdaberiDatoteku.Click += new System.EventHandler(this.btnOdaberiDatoteku_Click);
             // 
+            // lblOdabranaDatoteka
+            // 
+            this.lblOdabranaDatoteka.AutoSize = true;
+            this.lblOdabranaDatoteka.Location = new System.Drawing.Point(76, 121);
+            this.lblOdabranaDatoteka.Name = "lblOdabranaDatoteka";
+            this.lblOdabranaDatoteka.Size = new System.Drawing.Size(102, 13);
+            this.lblOdabranaDatoteka.TabIndex = 17;
+            this.lblOdabranaDatoteka.Text = "Odabrana datoteka:";
+            // 
+            // txtOdabranaDatoteka
+            // 
+            this.txtOdabranaDatoteka.Location = new System.Drawing.Point(79, 137);
+            this.txtOdabranaDatoteka.Name = "txtOdabranaDatoteka";
+            this.txtOdabranaDatoteka.ReadOnly = true;
+            this.txtOdabranaDatoteka.Size = new System.Drawing.Size(634, 20);
+            this.txtOdabranaDatoteka.TabIndex = 18;
+            // 
+            // lblIzracunatiSazetak
+            // 
+            this.lblIzracunatiSazetak.AutoSize = true;
+            this.lblIzracunatiSazetak.Location = new System.Drawing.Point(76, 316);
+            this.lblIzracunatiSazetak.Name = "lblIzracunatiSazetak";
+            this.lblIzracunatiSazetak.Size = new System.Drawing.Size(96, 13);
+            this.lblIzracunatiSazetak.TabIndex = 19;
+            this.lblIzracunatiSazetak.Text = "Izračunati sažetak:";
+            // 
+            // txtIzracunatiSazetak
+            // 
+            this.txtIzracunatiSazetak.Location = new System.Drawing.Point(79, 332);
+            this.txtIzracunatiSazetak.Name = "txtIzracunatiSazetak";
+            this.txtIzracunatiSazetak.ReadOnly = true;
+            this.txtIzracunatiSazetak.Size = new System.Drawing.Size(634, 20);
+            this.txtIzracunatiSazetak.TabIndex = 20;
+            // 
             // FrmDigitalniPotpis
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 261);
+            this.ClientSize = new System.Drawing.Size(800, 364);
+            this.Controls.Add(this.txtIzracunatiSazetak);
+            this.Controls.Add(this.lblIzracunatiSazetak);
+            this.Controls.Add(this.txtOdabranaDatoteka);
+            this.Controls.Add(this.lblOdabranaDatoteka);
             this.Controls.Add(this.btnOdaberiDatoteku);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblKriptiranaDatoteka);
             this.Controls.Add(this.txtKriptirano);
             this.Controls.Add(this.btnDekriptirajAsimetricno);
             this.Controls.Add(this.btnKriptirajAsimetricno);
@@ -205,8 +247,12 @@
         private System.Windows.Forms.Button btnKriptirajAsimetricno;
         private System.Windows.Forms.Button btnDekriptirajAsimetricno;
         private System.Windows.Forms.TextBox txtKriptirano;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblKriptiranaDatoteka;
         private System.Windows.Forms.Button btnOdaberiDatoteku;
+        private System.Windows.Forms.Label lblOdabranaDatoteka;
+        private System.Windows.Forms.TextBox txtOdabranaDatoteka;
+        private System.Windows.Forms.Label lblIzracunatiSazetak;
+        private System.Windows.Forms.TextBox txtIzracunatiSazetak;
     }
 }
 
